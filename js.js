@@ -1,69 +1,45 @@
-var cols, rows, current
-const w = 20
-const grid = []
-const stack = []
+var cols, rows, player, grid
+const w = 3 * 7
+const scl = 6
 
 function setup() {
-    createCanvas(displayWidth * .9, displayHeight * .85)
+    createCanvas(700, 700)
     cols = floor(width / w)
     rows = floor(height / w)
-
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-            let cell = new Cell(i, j)
-            grid.push(cell)
-        }
-    }
-
-    createMaze()
-    stack.filter(() => 0)
-    current = grid[0]
-    frameRate(20)
+    grid = new Grid(cols, rows)
+    player = new Player(10, 10, 0)
 }
 
 function draw() {
+    translate((-player.pos.x + w) * scl, (-player.pos.y + w) * scl)
+    scale(scl)
     background(30)
-    grid.forEach(cell => {
-        cell.draw()
-        if(cell == current) {
-            let x = cell.i * w
-            let y = cell.j * w
-            push()
-            fill(0, 200, 0)
-            noStroke()
-            rect(x, y, w, w)
-            pop()
-        }
-    })
+    grid.draw()
+    player.draw()
 
-    let cell = grid[grid.length - 1]
-    let x = cell.i * w
-    let y = cell.j * w
-    fill(0, 0, 200)
-    noStroke()
-    rect(x, y, w, w)
+    player.update()
+    grid.update()
 
-    if(keyIsDown(UP_ARROW)) move(UP_ARROW)
-    if(keyIsDown(RIGHT_ARROW)) move(RIGHT_ARROW)
-    if(keyIsDown(DOWN_ARROW)) move(DOWN_ARROW)
-    if(keyIsDown(LEFT_ARROW)) move(LEFT_ARROW)
-
-    if(current === cell) {
+    if(grid.current === grid.cells[grid.targetIndex]) {
         alert('voce ganhou')
         noLoop()
     }
 }
 
-function move(arrowCode) {
-    let x = current.i
-    let y = current.j
-    const [top, right, bottom, left] = current.walls
+function keyPressed() {
+    if(![UP_ARROW, RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW].includes(keyCode)) return
 
-    if(arrowCode === UP_ARROW && !top) y--
-    if(arrowCode === RIGHT_ARROW && !right) x++
-    if(arrowCode === DOWN_ARROW && !bottom) y++
-    if(arrowCode === LEFT_ARROW && !left) x--
+    if(keyCode === UP_ARROW) player.vel.y += -this.player.baseVelocity
+    else if(keyCode === RIGHT_ARROW) player.vel.x += this.player.baseVelocity
+    else if(keyCode === DOWN_ARROW) player.vel.y += this.player.baseVelocity
+    else if(keyCode === LEFT_ARROW) player.vel.x += -this.player.baseVelocity
+}
 
-    const i = x * rows + y
-    current = grid[i]
+function keyReleased() {
+    if(![UP_ARROW, RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW].includes(keyCode)) return
+
+    if(keyCode === UP_ARROW) player.vel.y -= -this.player.baseVelocity
+    else if(keyCode === RIGHT_ARROW) player.vel.x -= this.player.baseVelocity
+    else if(keyCode === DOWN_ARROW) player.vel.y -= this.player.baseVelocity
+    else if(keyCode === LEFT_ARROW) player.vel.x -= -this.player.baseVelocity
 }

@@ -31,7 +31,7 @@ class Cell {
         pop()
     }
 
-    unvisitedNeighbours() {
+    unvisitedNeighbours(grid) {
         const neighbours = []
         for(let iOff = -1; iOff <= 1; iOff++) {
             for(let jOff = -1; jOff <= 1; jOff++) {
@@ -75,13 +75,14 @@ class Cell {
     }
 }
 
-function createMaze() {
-    current = grid[0]
+function createMaze(grid) {
+    const stack = []
+    let current = grid.cells[0]
     current.visited = true
-    let unvisited = grid.length - 1
+    let unvisited = grid.cells.length - 1
 
     while(unvisited > 0) {
-        let neighbours = current.unvisitedNeighbours()
+        let neighbours = current.unvisitedNeighbours(grid.cells)
         if(neighbours.length) {
             const neighbour = random(neighbours)
             stack.push(current)
