@@ -3,7 +3,7 @@ class Grid {
         this.cells = []
         this.current = 0
         this.targetIndex = 0
-        // mostra em qual celular o player se encontra
+        // draws current cell
         this.debug = false
 
         for (let i = 0; i < cols; i++) {
@@ -43,6 +43,7 @@ class Grid {
         rect(x, y, w, w)
     }
 
+    // updates current grid according to player position
     update() {
         const xGrid = this.current.i * w
         const yGrid = this.current.j * w
@@ -57,7 +58,7 @@ class Grid {
         else if(player.pos.y > yGrid + w) y++
         // left
         else if(player.pos.x < xGrid) x--
-        // nao houve mudanca
+        // no change
         else return
 
         const index = x * rows + y
@@ -65,7 +66,7 @@ class Grid {
         player.index = index
     }
 
-    // uses Deep First Search to get cells along the path
+    // uses Deep First Search to get cells along the paths the player can take
     getPath(prev, cell, depth = 10) {
         if(depth == 0) return []
         if(!cell) cell = this.current

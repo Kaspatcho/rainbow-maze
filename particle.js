@@ -3,7 +3,7 @@ class Particle {
         this.pos = createVector(x, y)
         this.rays = []
         this.heading = 0
-        // mostra as cells carregadas pro ray casting
+        // draws cells loaded in ray casting
         this.debug = false
         this.renderDistance = 10
         const maxAngle = 45
@@ -25,8 +25,7 @@ class Particle {
             let c = cell.color
             if(cell === grid.cells[grid.targetIndex]) c = color(0, 0, 255)
             return cell.getWallPositions().map(([p1, p2]) => new Wall(p1.x, p1.y, p2.x, p2.y, c))
-        }
-        )
+        })
 
         return this.cast(walls, false)
     }
@@ -56,32 +55,30 @@ class Particle {
     cast(walls, cast = true) {
         const scene = []
         for (const ray of this.rays) {
-            let closest = null
-            let closestDist = Infinity
-            let closestCast = null
+            let closest = { wall: null, dist: Infinity, cast: null }
             for (const wall of walls) {
                 let cast = ray.cast(wall)
                 if(!cast) continue
                 let d = p5.Vector.dist(cast, this.pos)
-                if(d >= closestDist) continue
+                if(d >= closest.dist) continue
 
-                closest = wall
-                closestCast = cast
-                closestDist = d
+                closest.wall = wall
+                closest.cast = cast
+                closest.dist = d
             }
 
-            if(closest) {
+            if(closest.wall) {
                 const a = ray.dir.heading() - this.rays[floor(this.rays.length / 2)].dir.heading()
-                scene.push({ distance: closestDist * cos(a), material: closest.material })
+                scene.push({ distance: closest.dist * cos(a), material: closest.wall.material })
             } else {
                 scene.push({ distance: Infinity, material: color(255) })
             }
 
-            if(!closest || !cast) continue
+            if(!closest.wall || !cast) continue
 
             push()
             stroke(255)
-            line(this.pos.x, this.pos.y, closestCast.x, closestCast.y)
+            line(this.pos.x, this.pos.y, closest.cast.x, closest.cast.y)
             pop()
         }
 

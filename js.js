@@ -1,6 +1,5 @@
 var cols, rows, player, grid
 const w = 70
-const scl = 0.25
 
 function setup() {
     createCanvas(700, 700)
@@ -37,7 +36,9 @@ function drawScene() {
         const { distance: d, material: { levels: material } } = scene[i]
         const sq = d * d
         const sqW = width * width
+        // inverse square law for brightness
         const b = map(sq, 0, sqW, 1, 0)
+        // weak perspective projection for height (thanks to @HyperMario64)
         const h = map(height / (d * 0.1), 0, 150, 0, 3 * height / 4)
         console.log(d)
         noStroke()
@@ -50,6 +51,7 @@ function drawScene() {
 }
 
 function drawMinimap(drawPlayer = false) {
+    const scl = 0.25
     push()
     translate(2 * width / 3, 10)
     scale(scl)
