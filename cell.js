@@ -1,3 +1,4 @@
+let offset = 0
 class Cell {
     constructor(i, j) {
         this.i = i
@@ -7,7 +8,8 @@ class Cell {
         this.visited = false
         push()
         colorMode(HSB)
-        this.color = color(random(255), 30, 100)
+        this.color = color(offset, 90, 100)
+        offset = (offset + 20) % 255
         pop()
     }
 
