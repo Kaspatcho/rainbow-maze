@@ -40,7 +40,6 @@ function drawScene() {
         const b = map(sq, 0, sqW, 1, 0)
         // weak perspective projection for height (thanks to @HyperMario64)
         const h = map(height / (d * 0.1), 0, 150, 0, 3 * height / 4)
-        console.log(d)
         noStroke()
         if(material) fill(material[0] * b, material[1] * b, material[2] * b)
         else fill(255 * b)
@@ -61,7 +60,6 @@ function drawMinimap(drawPlayer = false) {
 }
 
 function keyPressed() {
-    console.log(keyCode)
     if(key == 'w') player.move(3)
     else if(key == 's') player.move(-3)
 }

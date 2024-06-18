@@ -84,7 +84,6 @@ class Grid {
 
         stack.push(cell)
         for (const [ x, y ] of positions) {
-            // console.log(cell.i, cell.j, prev?.i, prev?.j)
             if(prev?.i === x && prev?.j === y) continue
             // const newIndex = y * rows + x
             const newIndex = x * rows + y
