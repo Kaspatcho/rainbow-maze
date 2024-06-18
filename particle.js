@@ -23,7 +23,12 @@ class Particle {
     getScene(grid) {
         const walls = grid.getPath(null, null, this.renderDistance).flatMap(cell => {
             let c = cell.color
-            if(cell === grid.cells[grid.targetIndex]) c = color(0, 0, 255)
+            if(cell === grid.cells[grid.targetIndex]) {
+                push()
+                colorMode(HSB)
+                c = color(255 * noise(0.02 * frameCount), 100, 100)
+                pop()
+            }
             return cell.getWallPositions().map(([p1, p2]) => new Wall(p1.x, p1.y, p2.x, p2.y, c))
         })
 
