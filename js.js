@@ -1,6 +1,6 @@
 var cols, rows, player, grid
-const w = 3 * 7
-const scl = 6
+const w = 70
+const scl = 0.25
 
 function setup() {
     createCanvas(700, 700)
@@ -11,11 +11,9 @@ function setup() {
 }
 
 function draw() {
-    translate((-player.pos.x + w) * scl, (-player.pos.y + w) * scl)
-    scale(scl)
     background(30)
-    grid.draw()
-    player.draw()
+    drawScene()
+    drawMinimap()
 
     player.update()
     grid.update()
@@ -24,22 +22,48 @@ function draw() {
         alert('voce ganhou')
         noLoop()
     }
+
+    if(keyIsDown(65)) player.particle.rotate(-0.05)
+    if(keyIsDown(68)) player.particle.rotate(0.05)
+}
+
+function drawScene() {
+    const scene = player.particle.getScene(grid)
+    let w = width / scene.length
+
+    push()
+    translate(0, height / 2)
+    for (const i in scene) {
+        const { distance: d, material: { levels: material } } = scene[i]
+        const sq = d * d
+        const sqW = width * width
+        const b = map(sq, 0, sqW, 1, 0)
+        const h = map(height / (d * 0.1), 0, 150, 0, 3 * height / 4)
+        console.log(d)
+        noStroke()
+        if(material) fill(material[0] * b, material[1] * b, material[2] * b)
+        else fill(255 * b)
+        rectMode(CENTER)
+        rect(i * w, 0, w + 1, h)
+    }
+    pop()
+}
+
+function drawMinimap(drawPlayer = false) {
+    push()
+    translate(2 * width / 3, 10)
+    scale(scl)
+    grid.draw()
+    if(drawPlayer) player.draw()
+    pop()
 }
 
 function keyPressed() {
-    if(![UP_ARROW, RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW].includes(keyCode)) return
-
-    if(keyCode === UP_ARROW) player.vel.y += -this.player.baseVelocity
-    else if(keyCode === RIGHT_ARROW) player.vel.x += this.player.baseVelocity
-    else if(keyCode === DOWN_ARROW) player.vel.y += this.player.baseVelocity
-    else if(keyCode === LEFT_ARROW) player.vel.x += -this.player.baseVelocity
+    console.log(keyCode)
+    if(key == 'w') player.move(3)
+    else if(key == 's') player.move(-3)
 }
 
 function keyReleased() {
-    if(![UP_ARROW, RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW].includes(keyCode)) return
-
-    if(keyCode === UP_ARROW) player.vel.y -= -this.player.baseVelocity
-    else if(keyCode === RIGHT_ARROW) player.vel.x -= this.player.baseVelocity
-    else if(keyCode === DOWN_ARROW) player.vel.y -= this.player.baseVelocity
-    else if(keyCode === LEFT_ARROW) player.vel.x -= -this.player.baseVelocity
+    if(key == 'w' || key == 's') player.move(0)
 }

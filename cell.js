@@ -5,6 +5,10 @@ class Cell {
         // top, right, bottom, left
         this.walls = [1, 1, 1, 1]
         this.visited = false
+        push()
+        colorMode(HSB)
+        this.color = color(random(255), 30, 100)
+        pop()
     }
 
     draw() {
@@ -12,14 +16,9 @@ class Cell {
         let y = this.j * w
         const [top, right, bottom, left] = this.walls
         push()
-        // if(this.visited) {
-        //     fill(30)
-        //     noStroke()
-        //     rect(x, y, w, w)
-        // }
         noFill()
-        stroke(255)
-        strokeWeight(2)
+        stroke(this.color)
+        strokeWeight(20)
         // top
         if(top) line(x, y, x + w, y)
         // right
@@ -29,6 +28,24 @@ class Cell {
         // left
         if(left) line(x, y, x, y + w)
         pop()
+    }
+
+    getWallPositions() {
+        let x = this.i * w
+        let y = this.j * w
+        const [top, right, bottom, left] = this.walls
+        const positions = []
+
+        // top: (x,y) - (x+w, y)
+        if(top) positions.push([createVector(x,y), createVector(x + w, y)])
+        // right: (x+w,y) - (x+w, y+w)
+        if(right) positions.push([createVector(x+w,y), createVector(x + w, y+w)])
+        // bottom: (x,y+w) - (x+w, y+w)
+        if(bottom) positions.push([createVector(x,y + w), createVector(x + w, y + w)])
+        // left: (x,y) - (x, y+w)
+        if(left) positions.push([createVector(x,y), createVector(x, y + w)])
+
+        return positions
     }
 
     unvisitedNeighbours(grid) {

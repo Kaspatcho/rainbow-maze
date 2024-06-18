@@ -3,6 +3,7 @@ class Grid {
         this.cells = []
         this.current = 0
         this.targetIndex = 0
+        // mostra em qual celular o player se encontra
         this.debug = false
 
         for (let i = 0; i < cols; i++) {
@@ -15,7 +16,6 @@ class Grid {
         createMaze(this)
         this.current = this.cells[0]
         this.targetIndex = this.cells.length - 1
-        // this.targetIndex = floor(random(this.cells.length / 2, this.cells.length))
     }
 
     draw() {
@@ -57,9 +57,42 @@ class Grid {
         else if(player.pos.y > yGrid + w) y++
         // left
         else if(player.pos.x < xGrid) x--
+        // nao houve mudanca
+        else return
 
         const index = x * rows + y
         this.current = this.cells[index]
         player.index = index
+    }
+
+    // uses Deep First Search to get cells along the path
+    getPath(prev, cell, depth = 10) {
+        if(depth == 0) return []
+        if(!cell) cell = this.current
+
+        const [ top, right, bottom, left ] = cell.walls
+        let i = cell.i
+        let j = cell.j
+        const stack = []
+        const positions = []
+
+        if(!top) positions.push([i, j - 1])
+        if(!right) positions.push([i + 1, j])
+        if(!bottom) positions.push([i, j + 1])
+        if(!left) positions.push([i - 1, j])
+
+        stack.push(cell)
+        for (const [ x, y ] of positions) {
+            // console.log(cell.i, cell.j, prev?.i, prev?.j)
+            if(prev?.i === x && prev?.j === y) continue
+            // const newIndex = y * rows + x
+            const newIndex = x * rows + y
+            const newCell = this.cells[newIndex]
+
+            if(!newCell) continue
+            stack.push(...this.getPath(cell, newCell, depth - 1))
+        }
+
+        return stack
     }
 }
